@@ -83,6 +83,7 @@ fun EnergyScreen(
                 if (number != null && maxNumber != null && number >= 0 && maxNumber > 0 && number <= maxNumber) {
                     currentEnergy.value = number
                     currentMaxEnergy.value = maxNumber
+                    errorMessage.value = ""
                 }
                 else {
                     errorMessage.value = "올바른 생명의 기운 수치를 입력하시오."
