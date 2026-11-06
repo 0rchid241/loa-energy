@@ -99,6 +99,10 @@ fun EnergyScreen(
                 color = MaterialTheme.colorScheme.error
             )
         }
+
+        Text(
+            text = "경과 시간: ${calculateElapsedMinutes(1_000_000L, 900_000L)}분"
+        )
     }
 }
 
@@ -110,6 +114,14 @@ fun calculateRecoveredEnergy(
     val recoveryCount = elapsedMinutes / 10
     val currentEnergy = energy + recoveryCount * 30
     return minOf(currentEnergy, maxEnergy)
+}
+
+fun calculateElapsedMinutes(
+    recordedAtMillis: Long,
+    nowMillis: Long
+): Long {
+    val elapsedMillis = (nowMillis - recordedAtMillis) / 60000L
+    return maxOf(elapsedMillis, 0)
 }
 
 @Preview(showBackground = true)
