@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.orchid.loaenergy.ui.theme.LoaEnergyTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +42,18 @@ fun EnergyScreen(
     modifier: Modifier = Modifier
 ) {
     val remainingEnergy = maxEnergy - energy
+    val energyInput = remember {
+        mutableStateOf(energy.toString())
+    }
     Column(modifier = modifier) {
         Text(text = "로아 생명의 기운")
         Text(text = "$energy / $maxEnergy")
         Text(text = "완충까지 남은 생기: $remainingEnergy")
+        OutlinedTextField(
+            value = energyInput.value,
+            onValueChange = { energyInput.value = it },
+            label = { Text("현재 생명의 기운")}
+        )
     }
 }
 
