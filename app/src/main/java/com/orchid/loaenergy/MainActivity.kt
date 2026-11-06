@@ -23,7 +23,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     EnergyScreen(
                         energy = 2180,
-                        maxEnergy = 2500
+                        maxEnergy = 2500,
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
@@ -40,17 +41,9 @@ fun EnergyScreen(
     val remainingEnergy = maxEnergy - energy
     Column(modifier = modifier) {
         // Text 세 개를 직접 작성해 보자.
-        Text(
-            text = "로아 생명의 기운",
-            modifier = modifier
-        )
-        Text(
-            text = "$energy / $maxEnergy",
-            modifier = modifier
-        )
-        Text(
-            text = "완충까지 남은 생기: $remainingEnergy"
-        )
+        Text(text = "로아 생명의 기운")
+        Text(text = "$energy / $maxEnergy")
+        Text(text = "완충까지 남은 생기: $remainingEnergy")
     }
 }
 
