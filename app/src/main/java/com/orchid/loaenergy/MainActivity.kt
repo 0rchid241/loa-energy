@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +56,10 @@ fun EnergyScreen(
         mutableStateOf(maxEnergy.toString())
     }
     val remainingEnergy = currentMaxEnergy.value - currentEnergy.value
+    val errorMessage = remember {
+        mutableStateOf("")
+    }
+
     Column(modifier = modifier) {
         Text(text = "로아 생명의 기운")
         Text(text = "${currentEnergy.value} / ${currentMaxEnergy.value}")
@@ -79,9 +84,19 @@ fun EnergyScreen(
                     currentEnergy.value = number
                     currentMaxEnergy.value = maxNumber
                 }
+                else {
+                    errorMessage.value = "올바른 생명의 기운 수치를 입력하시오."
+                }
             }
         ) {
             Text("적용")
+        }
+
+        if (errorMessage.value.isNotEmpty()) {
+            Text(
+                text = errorMessage.value,
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }
