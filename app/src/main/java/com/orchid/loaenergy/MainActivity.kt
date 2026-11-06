@@ -40,7 +40,6 @@ fun EnergyScreen(
 ) {
     val remainingEnergy = maxEnergy - energy
     Column(modifier = modifier) {
-        // Text 세 개를 직접 작성해 보자.
         Text(text = "로아 생명의 기운")
         Text(text = "$energy / $maxEnergy")
         Text(text = "완충까지 남은 생기: $remainingEnergy")
@@ -49,7 +48,7 @@ fun EnergyScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun EnergyScreenPreview() {
     LoaEnergyTheme {
         EnergyScreen(2180, 2500)
     }
