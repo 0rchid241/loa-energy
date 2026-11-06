@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,19 +42,34 @@ fun EnergyScreen(
     maxEnergy: Int,
     modifier: Modifier = Modifier
 ) {
-    val remainingEnergy = maxEnergy - energy
+    val currentEnergy = remember {
+        mutableStateOf(energy)
+    }
     val energyInput = remember {
         mutableStateOf(energy.toString())
     }
+    val remainingEnergy = maxEnergy - currentEnergy.value
     Column(modifier = modifier) {
         Text(text = "로아 생명의 기운")
-        Text(text = "$energy / $maxEnergy")
+        Text(text = "${currentEnergy.value} / $maxEnergy")
         Text(text = "완충까지 남은 생기: $remainingEnergy")
+
         OutlinedTextField(
             value = energyInput.value,
             onValueChange = { energyInput.value = it },
             label = { Text("현재 생명의 기운")}
         )
+
+        Button(
+            onClick = {
+                val number = energyInput.value.toIntOrNull()
+                if (number != null && number >= 0 && number <= maxEnergy) {
+                    currentEnergy.value = number
+                }
+            }
+        ) {
+            Text("적용")
+        }
     }
 }
 
