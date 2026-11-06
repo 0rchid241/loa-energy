@@ -102,6 +102,16 @@ fun EnergyScreen(
     }
 }
 
+fun calculateRecoveredEnergy(
+    energy: Int,
+    maxEnergy: Int,
+    elapsedMinutes: Int
+): Int {
+    val recoveryCount = elapsedMinutes / 10
+    val currentEnergy = energy + recoveryCount * 30
+    return minOf(currentEnergy, maxEnergy)
+}
+
 @Preview(showBackground = true)
 @Composable
 fun EnergyScreenPreview() {
