@@ -48,10 +48,16 @@ fun EnergyScreen(
     val energyInput = remember {
         mutableStateOf(energy.toString())
     }
-    val remainingEnergy = maxEnergy - currentEnergy.value
+    val currentMaxEnergy = remember {
+        mutableStateOf(maxEnergy)
+    }
+    val maxEnergyInput = remember {
+        mutableStateOf(maxEnergy.toString())
+    }
+    val remainingEnergy = currentMaxEnergy.value - currentEnergy.value
     Column(modifier = modifier) {
         Text(text = "로아 생명의 기운")
-        Text(text = "${currentEnergy.value} / $maxEnergy")
+        Text(text = "${currentEnergy.value} / ${currentMaxEnergy.value}")
         Text(text = "완충까지 남은 생기: $remainingEnergy")
 
         OutlinedTextField(
@@ -59,12 +65,19 @@ fun EnergyScreen(
             onValueChange = { energyInput.value = it },
             label = { Text("현재 생명의 기운")}
         )
+        OutlinedTextField(
+            value = maxEnergyInput.value,
+            onValueChange = { maxEnergyInput.value = it },
+            label = { Text("최대 생명의 기운")}
+        )
 
         Button(
             onClick = {
                 val number = energyInput.value.toIntOrNull()
-                if (number != null && number >= 0 && number <= maxEnergy) {
+                val maxNumber = maxEnergyInput.value.toIntOrNull()
+                if (number != null && maxNumber != null && number >= 0 && maxNumber > 0 && number <= maxNumber) {
                     currentEnergy.value = number
+                    currentMaxEnergy.value = maxNumber
                 }
             }
         ) {
