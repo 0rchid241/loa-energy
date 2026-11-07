@@ -21,6 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val RECOVERY_INTERVAL_MINUTES = 1
 private const val RECOVERY_AMOUNT = 30
@@ -79,6 +82,17 @@ fun EnergyScreen(
             RECOVERY_AMOUNT
         ))
     }
+    val totalMinutesUntilFull = calculateMinutesUntilFull(
+        currentEnergy.value,
+        currentMaxEnergy.value,
+        RECOVERY_INTERVAL_MINUTES,
+        RECOVERY_AMOUNT
+    )
+    val estimatedFullAtMillis =
+        recordedAtMillis.value + totalMinutesUntilFull * 60_000L
+    val timeFormatter = SimpleDateFormat("a hh:mm", Locale.KOREAN)
+    val estimatedFullTime =
+        timeFormatter.format(Date(estimatedFullAtMillis))
 
     LaunchedEffect(
         recordedAtMillis.value,
@@ -110,7 +124,8 @@ fun EnergyScreen(
         Text(text = "로아 생명의 기운")
         Text(text = "${estimatedEnergy.value} / ${currentMaxEnergy.value}")
         Text(text = "완충까지 남은 생기: $remainingEnergy")
-        Text(text = "완충까지 약 ${minutesUntilFull.value}" + "분")
+        Text(text = "완충까지 약 ${minutesUntilFull.value}분")
+        Text(text = "완충 예상 시각: $estimatedFullTime")
 
         OutlinedTextField(
             value = energyInput.value,
