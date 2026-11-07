@@ -55,6 +55,12 @@ fun EnergyScreen(
     val maxEnergyInput = remember {
         mutableStateOf(maxEnergy.toString())
     }
+    val recordedAtMillis = remember {
+        mutableStateOf(System.currentTimeMillis())
+    }
+    val estimatedEnergy = remember {
+        mutableStateOf(energy)
+    }
     val remainingEnergy = currentMaxEnergy.value - currentEnergy.value
     val errorMessage = remember {
         mutableStateOf("")
@@ -84,6 +90,7 @@ fun EnergyScreen(
                     currentEnergy.value = number
                     currentMaxEnergy.value = maxNumber
                     errorMessage.value = ""
+                    recordedAtMillis.value = System.currentTimeMillis()
                 }
                 else {
                     errorMessage.value = "올바른 생명의 기운 수치를 입력하시오."
@@ -93,16 +100,28 @@ fun EnergyScreen(
             Text("적용")
         }
 
+        Text(text = "예상 생명의 기운 : ${estimatedEnergy.value}")
+        Button(
+            onClick = {
+                estimatedEnergy.value = calculateRecoveredEnergy(
+                    currentEnergy.value,
+                    currentMaxEnergy.value,
+                    calculateElapsedMinutes(
+                        recordedAtMillis.value,
+                        System.currentTimeMillis()
+                        ).toInt()
+                )
+            }
+        ) {
+            Text("계산")
+        }
+
         if (errorMessage.value.isNotEmpty()) {
             Text(
                 text = errorMessage.value,
                 color = MaterialTheme.colorScheme.error
             )
         }
-
-        Text(
-            text = "경과 시간: ${calculateElapsedMinutes(1_000_000L, 900_000L)}분"
-        )
     }
 }
 
