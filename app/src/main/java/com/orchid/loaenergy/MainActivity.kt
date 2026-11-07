@@ -18,6 +18,9 @@ import com.orchid.loaenergy.ui.theme.LoaEnergyTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,14 +64,33 @@ fun EnergyScreen(
     val estimatedEnergy = remember {
         mutableStateOf(energy)
     }
-    val remainingEnergy = currentMaxEnergy.value - currentEnergy.value
+    val remainingEnergy = currentMaxEnergy.value - estimatedEnergy.value
     val errorMessage = remember {
         mutableStateOf("")
     }
 
+    LaunchedEffect(
+        recordedAtMillis.value,
+        currentEnergy.value,
+        currentMaxEnergy.value
+    ) {
+        while (isActive) {
+            estimatedEnergy.value = calculateRecoveredEnergy(
+                currentEnergy.value,
+                currentMaxEnergy.value,
+                calculateElapsedMinutes(
+                    recordedAtMillis.value,
+                    System.currentTimeMillis()
+                ).toInt()
+            )
+
+            delay(60_000L)
+        }
+    }
+
     Column(modifier = modifier) {
         Text(text = "로아 생명의 기운")
-        Text(text = "${currentEnergy.value} / ${currentMaxEnergy.value}")
+        Text(text = "${estimatedEnergy.value} / ${currentMaxEnergy.value}")
         Text(text = "완충까지 남은 생기: $remainingEnergy")
 
         OutlinedTextField(
@@ -101,22 +123,6 @@ fun EnergyScreen(
             Text("적용")
         }
 
-        Text(text = "예상 생명의 기운 : ${estimatedEnergy.value}")
-        Button(
-            onClick = {
-                estimatedEnergy.value = calculateRecoveredEnergy(
-                    currentEnergy.value,
-                    currentMaxEnergy.value,
-                    calculateElapsedMinutes(
-                        recordedAtMillis.value,
-                        System.currentTimeMillis()
-                        ).toInt()
-                )
-            }
-        ) {
-            Text("계산")
-        }
-
         if (errorMessage.value.isNotEmpty()) {
             Text(
                 text = errorMessage.value,
@@ -131,7 +137,7 @@ fun calculateRecoveredEnergy(
     maxEnergy: Int,
     elapsedMinutes: Int
 ): Int {
-    val recoveryCount = elapsedMinutes / 10
+    val recoveryCount = elapsedMinutes / 1
     val currentEnergy = energy + recoveryCount * 30
     return minOf(currentEnergy, maxEnergy)
 }
