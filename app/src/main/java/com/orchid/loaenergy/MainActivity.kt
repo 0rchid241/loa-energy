@@ -87,6 +87,7 @@ fun EnergyScreen(
                 val number = energyInput.value.toIntOrNull()
                 val maxNumber = maxEnergyInput.value.toIntOrNull()
                 if (number != null && maxNumber != null && number >= 0 && maxNumber > 0 && number <= maxNumber) {
+                    estimatedEnergy.value = number
                     currentEnergy.value = number
                     currentMaxEnergy.value = maxNumber
                     errorMessage.value = ""
