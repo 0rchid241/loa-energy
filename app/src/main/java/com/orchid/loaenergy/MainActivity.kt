@@ -22,6 +22,9 @@ import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
+private const val RECOVERY_INTERVAL_MINUTES = 1
+private const val RECOVERY_AMOUNT = 30
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +71,14 @@ fun EnergyScreen(
     val errorMessage = remember {
         mutableStateOf("")
     }
+    val minutesUntilFull = remember {
+        mutableStateOf(calculateMinutesUntilFull(
+            estimatedEnergy.value,
+            currentMaxEnergy.value,
+            RECOVERY_INTERVAL_MINUTES,
+            RECOVERY_AMOUNT
+        ))
+    }
 
     LaunchedEffect(
         recordedAtMillis.value,
@@ -84,6 +95,13 @@ fun EnergyScreen(
                 ).toInt()
             )
 
+            minutesUntilFull.value = calculateMinutesUntilFull(
+                estimatedEnergy.value,
+                currentMaxEnergy.value,
+                RECOVERY_INTERVAL_MINUTES,
+                RECOVERY_AMOUNT
+            )
+
             delay(60_000L)
         }
     }
@@ -92,6 +110,7 @@ fun EnergyScreen(
         Text(text = "로아 생명의 기운")
         Text(text = "${estimatedEnergy.value} / ${currentMaxEnergy.value}")
         Text(text = "완충까지 남은 생기: $remainingEnergy")
+        Text(text = "완충까지 약 ${minutesUntilFull.value}" + "분")
 
         OutlinedTextField(
             value = energyInput.value,
@@ -137,8 +156,8 @@ fun calculateRecoveredEnergy(
     maxEnergy: Int,
     elapsedMinutes: Int
 ): Int {
-    val recoveryCount = elapsedMinutes / 1
-    val currentEnergy = energy + recoveryCount * 30
+    val recoveryCount = elapsedMinutes / RECOVERY_INTERVAL_MINUTES
+    val currentEnergy = energy + recoveryCount * RECOVERY_AMOUNT
     return minOf(currentEnergy, maxEnergy)
 }
 
@@ -148,6 +167,24 @@ fun calculateElapsedMinutes(
 ): Long {
     val elapsedMillis = (nowMillis - recordedAtMillis) / 60000L
     return maxOf(elapsedMillis, 0)
+}
+
+fun calculateMinutesUntilFull(
+    energy: Int,
+    maxEnergy: Int,
+    recoveryIntervalMinutes: Int,
+    recoveryAmount: Int
+): Int {
+    val remainingEnergy = maxEnergy - energy
+
+    var requiredRecoveryCount = remainingEnergy / recoveryAmount
+    if (remainingEnergy % recoveryAmount != 0) {
+        requiredRecoveryCount += 1
+    }
+
+    val minutesUntilFull = requiredRecoveryCount * recoveryIntervalMinutes
+
+    return minutesUntilFull
 }
 
 @Preview(showBackground = true)
