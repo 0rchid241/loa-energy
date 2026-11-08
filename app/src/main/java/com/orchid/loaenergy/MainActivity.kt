@@ -29,7 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 
-private const val RECOVERY_INTERVAL_MINUTES = 1
+private const val RECOVERY_INTERVAL_MINUTES = 10
 private const val RECOVERY_AMOUNT = 30
 
 class MainActivity : ComponentActivity() {
