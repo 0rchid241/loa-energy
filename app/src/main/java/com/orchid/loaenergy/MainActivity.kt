@@ -27,6 +27,7 @@ import java.util.Locale
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 private const val RECOVERY_INTERVAL_MINUTES = 1
 private const val RECOVERY_AMOUNT = 30
@@ -98,6 +99,19 @@ fun EnergyScreen(
         timeFormatter.format(Date(estimatedFullAtMillis))
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(context) {
+        val savedRecord = readEnergy(context).first()
+
+        if (savedRecord != null) {
+            currentEnergy.value = savedRecord.currentEnergy
+            currentMaxEnergy.value = savedRecord.maxEnergy
+            recordedAtMillis.value = savedRecord.recordedAtMillis
+
+            energyInput.value = savedRecord.currentEnergy.toString()
+            maxEnergyInput.value = savedRecord.maxEnergy.toString()
+        }
+    }
 
     LaunchedEffect(
         recordedAtMillis.value,
