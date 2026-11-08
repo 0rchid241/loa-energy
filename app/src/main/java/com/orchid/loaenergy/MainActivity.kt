@@ -24,6 +24,9 @@ import kotlinx.coroutines.isActive
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 
 private const val RECOVERY_INTERVAL_MINUTES = 1
 private const val RECOVERY_AMOUNT = 30
@@ -93,6 +96,8 @@ fun EnergyScreen(
     val timeFormatter = SimpleDateFormat("a hh:mm", Locale.KOREAN)
     val estimatedFullTime =
         timeFormatter.format(Date(estimatedFullAtMillis))
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(
         recordedAtMillis.value,
@@ -143,11 +148,20 @@ fun EnergyScreen(
                 val number = energyInput.value.toIntOrNull()
                 val maxNumber = maxEnergyInput.value.toIntOrNull()
                 if (number != null && maxNumber != null && number >= 0 && maxNumber > 0 && number <= maxNumber) {
+                    val nowMillis = System.currentTimeMillis()
                     estimatedEnergy.value = number
                     currentEnergy.value = number
                     currentMaxEnergy.value = maxNumber
                     errorMessage.value = ""
-                    recordedAtMillis.value = System.currentTimeMillis()
+                    recordedAtMillis.value = nowMillis
+                    scope.launch {
+                        saveEnergy(
+                            context,
+                            number,
+                            maxNumber,
+                            nowMillis
+                        )
+                    }
                 }
                 else {
                     errorMessage.value = "올바른 생명의 기운 수치를 입력하시오."
