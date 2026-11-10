@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
+import androidx.glance.appwidget.updateAll
 
 private const val RECOVERY_INTERVAL_MINUTES = 10
 private const val RECOVERY_AMOUNT = 30
@@ -175,6 +176,8 @@ fun EnergyScreen(
                             maxNumber,
                             nowMillis
                         )
+
+                        EnergyWidget().updateAll(context)
                     }
                 }
                 else {
