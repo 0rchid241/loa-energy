@@ -17,14 +17,27 @@ class EnergyWidget : GlanceAppWidget() {
     ) {
         val savedRecord = readEnergy(context).first()
 
+        val estimatedEnergy = savedRecord?.let { record ->
+            val elapsedMinutes = calculateElapsedMinutes(
+                record.recordedAtMillis,
+                System.currentTimeMillis()
+            ).toInt()
+
+            calculateRecoveredEnergy(
+                record.currentEnergy,
+                record.maxEnergy,
+                elapsedMinutes
+            )
+        }
+
         provideContent {
             Column {
                 Text("LOA Energy")
 
-                if (savedRecord == null) {
+                if (savedRecord == null || estimatedEnergy == null) {
                     Text("저장된 생기가 없습니다.")
                 } else {
-                    Text("${savedRecord.currentEnergy} / ${savedRecord.maxEnergy}")
+                    Text("$estimatedEnergy / ${savedRecord.maxEnergy}")
                 }
             }
         }
