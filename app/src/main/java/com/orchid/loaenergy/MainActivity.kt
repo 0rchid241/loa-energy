@@ -29,6 +29,10 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 import androidx.glance.appwidget.updateAll
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
 private const val RECOVERY_INTERVAL_MINUTES = 10
 private const val RECOVERY_AMOUNT = 30
@@ -36,6 +40,18 @@ private const val RECOVERY_AMOUNT = 30
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val updateRequest =
+            PeriodicWorkRequestBuilder<EnergyWidgetUpdateWorker>(
+                15,
+                TimeUnit.MINUTES
+            ).build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "energy-widget-update",
+            ExistingPeriodicWorkPolicy.KEEP,
+            updateRequest
+        )
+
         enableEdgeToEdge()
         setContent {
             LoaEnergyTheme {
